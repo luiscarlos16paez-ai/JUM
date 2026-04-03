@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Control SKUs - Premium</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-container">
+        <header class="app-header">
+            <h1>📦 Control de SKUs</h1>
+            <p id="current-month-name">Resumen Mensual</p>
+        </header>
+
+        <section class="monthly-dashboard">
+            <div class="stat-card">
+                <span class="stat-label">Pedidos</span>
+                <span id="month-orders-count" class="stat-value">0</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-label">Neto</span>
+                <span id="month-neto-value" class="stat-value">$0</span>
+            </div>
+            <div class="stat-card highlight">
+                <span class="stat-label">Líquido</span>
+                <span id="month-liquido-value" class="stat-value">$0</span>
+            </div>
+        </section>
+
+        <section class="input-card">
+            <div class="input-row">
+                <div class="input-group">
+                    <label>Fecha</label>
+                    <input type="date" id="date-input">
+                </div>
+                <div class="input-group">
+                    <label>Cantidad SKUs</label>
+                    <input type="number" id="sku-input" placeholder="Ej: 10">
+                </div>
+            </div>
+            <button id="add-button" class="btn-success">Guardar Registro</button>
+            <div id="error-msg"></div>
+        </section>
+
+        <main id="tables-container"></main>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
