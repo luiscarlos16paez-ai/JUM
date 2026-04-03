@@ -1,51 +1,66 @@
+// === CONFIGURACIÓN DE FIREBASE (PEGA TUS DATOS AQUÍ) ===
+const firebaseConfig = {
+  apiKey: "TU_API_KEY",
+  authDomain: "TU_PROYECTO.firebaseapp.com",
+  projectId: "TU_PROYECTO_ID",
+  storageBucket: "TU_PROYECTO.appspot.com",
+  messagingSenderId: "TU_SENDER_ID",
+  appId: "TU_APP_ID"
+};
+
+// Inicializar
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
+
+// Elementos HTML
+const authSection = document.getElementById('auth-section');
+const mainApp = document.getElementById('main-app');
 const dateInput = document.getElementById('date-input');
 const skuInput = document.getElementById('sku-input');
 const addBtn = document.getElementById('add-button');
 const tablesContainer = document.getElementById('tables-container');
-const errorMsg = document.getElementById('error-msg');
 
-const monthOrdersEl = document.getElementById('month-orders-count');
-const monthNetoEl = document.getElementById('month-neto-value');
-const monthLiquidoEl = document.getElementById('month-liquido-value');
-const monthNameEl = document.getElementById('current-month-name');
+// 1. CONTROL DE USUARIO (LOGICA DE CUENTAS)
+auth.onAuthStateChanged(user => {
+    if (user) {
+        authSection.style.display = 'none';
+        mainApp.style.display = 'block';
+        dateInput.value = new Date().toISOString().split('T')[0];
+        escucharDatos(user.uid);
+    } else {
+        authSection.style.display = 'block';
+        mainApp.style.display = 'none';
+    }
+});
 
-// Fecha hoy
-dateInput.value = new Date().toISOString().split('T')[0];
-
-function getAllOrders() {
-    const data = localStorage.getItem('historial_v3');
-    return data ? JSON.parse(data) : [];
+function login() {
+    const e = document.getElementById('email').value;
+    const p = document.getElementById('password').value;
+    auth.signInWithEmailAndPassword(e, p).catch(err => alert("Error: " + err.message));
 }
 
-function saveOrders(orders) {
-    localStorage.setItem('historial_v3', JSON.stringify(orders));
+function register() {
+    const e = document.getElementById('email').value;
+    const p = document.getElementById('password').value;
+    auth.createUserWithEmailAndPassword(e, p).catch(err => alert("Error: " + err.message));
 }
 
-function updateMonthlyDashboard(orders) {
-    const now = new Date();
-    const currentMonth = now.getMonth();
-    const currentYear = now.getFullYear();
-    const meses = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
-    monthNameEl.textContent = `Mes: ${meses[currentMonth]} ${currentYear}`;
+function logout() { auth.signOut(); }
 
-    let mOrders = 0; let mNeto = 0;
-    orders.forEach(o => {
-        const d = new Date(o.date + "T00:00:00");
-        if (d.getMonth() === currentMonth && d.getFullYear() === currentYear) {
-            mOrders++; mNeto += o.total;
-        }
+// 2. LÓGICA DE DATOS (NUBE)
+function escucharDatos(uid) {
+    db.collection('usuarios').doc(uid).collection('pedidos')
+    .onSnapshot(snapshot => {
+        const pedidos = [];
+        snapshot.forEach(doc => pedidos.push({ id: doc.id, ...doc.data() }));
+        renderizarTodo(pedidos);
     });
-
-    monthOrdersEl.textContent = mOrders;
-    monthNetoEl.textContent = `$${mNeto.toLocaleString('es-CL')}`;
-    monthLiquidoEl.textContent = `$${Math.round(mNeto * 0.855).toLocaleString('es-CL')}`;
 }
 
-function renderTables() {
-    const orders = getAllOrders();
+function renderizarTodo(orders) {
     updateMonthlyDashboard(orders);
     tablesContainer.innerHTML = '';
-
     const grouped = {};
     orders.forEach(o => {
         if (!grouped[o.date]) grouped[o.date] = [];
@@ -61,34 +76,30 @@ function renderTables() {
                 <div class="order-row">
                     <div class="order-qty">${o.qty}</div>
                     <div class="order-info">
-                        <div class="order-math">Cálculo: ${o.price}x${o.qty} | Base: $${o.base}</div>
+                        <div class="order-math">${o.price}x${o.qty} + $${o.base}</div>
                         <div class="order-total">$${o.total.toLocaleString('es-CL')}</div>
                     </div>
-                    <button class="delete-btn" onclick="deleteOrder(${o.id})">✕</button>
+                    <button class="delete-btn" onclick="deleteOrder('${o.id}')">✕</button>
                 </div>`;
         });
-
         tablesContainer.innerHTML += `
             <div class="daily-card">
                 <div class="daily-header">📅 ${date}</div>
                 <div>${rowsHtml}</div>
                 <div class="daily-footer">
-                    <div class="footer-row"><span>Neto:</span> <span>$${dayNeto.toLocaleString('es-CL')}</span></div>
-                    <div class="footer-total"><div class="footer-row"><span>Líquido (14.5%):</span> <span>$${Math.round(dayNeto * 0.855).toLocaleString('es-CL')}</span></div></div>
+                    <div class="footer-total">Líquido: $${Math.round(dayNeto * 0.855).toLocaleString('es-CL')}</div>
                 </div>
             </div>`;
     });
 }
 
 addBtn.addEventListener('click', () => {
-    const date = dateInput.value;
+    const user = auth.currentUser;
     const qty = parseInt(skuInput.value);
-    if (!date || isNaN(qty) || qty <= 0) {
-        errorMsg.textContent = "Datos inválidos";
-        return;
-    }
+    const date = dateInput.value;
+    if (!user || !qty) return;
 
-    let price = 0; let base = 0;
+    let price = 0, base = 0;
     if (qty <= 10) { price = 120; base = 1000; }
     else if (qty <= 20) { price = 70; base = 1000; }
     else if (qty <= 30) { price = 60; base = 1000; }
@@ -97,21 +108,38 @@ addBtn.addEventListener('click', () => {
     else { price = 40; base = 1200; }
 
     const total = base + (price * qty);
-    const orders = getAllOrders();
-    orders.push({ id: Date.now(), date, qty, price, total, base });
-    saveOrders(orders);
     
+    db.collection('usuarios').doc(user.uid).collection('pedidos').add({
+        date, qty, price, base, total, createdAt: Date.now()
+    });
     skuInput.value = '';
-    errorMsg.textContent = "";
-    renderTables();
 });
 
-window.deleteOrder = function(id) {
-    if(confirm("¿Eliminar registro?")) {
-        const orders = getAllOrders().filter(o => o.id !== id);
-        saveOrders(orders);
-        renderTables();
+window.deleteOrder = (id) => {
+    if(confirm("¿Borrar?")) {
+        db.collection('usuarios').doc(auth.currentUser.uid).collection('pedidos').doc(id).delete();
     }
 };
 
-renderTables();
+// 3. TU LÓGICA DEL DÍA 4 (PERIODOS)
+function updateMonthlyDashboard(orders) {
+    const now = new Date();
+    const dia = now.getDate();
+    let m = now.getMonth(), a = now.getFullYear();
+    if (dia < 4) { if (m === 0) { m = 11; a--; } else { m--; } }
+    
+    const meses = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+    document.getElementById('current-month-name').textContent = `Periodo: ${meses[m]} ${a}`;
+
+    let totalNeto = 0, count = 0;
+    orders.forEach(o => {
+        const d = new Date(o.date + "T00:00:00");
+        if (d.getMonth() === m && d.getFullYear() === a) {
+            count++; totalNeto += o.total;
+        }
+    });
+
+    document.getElementById('month-orders-count').textContent = count;
+    document.getElementById('month-neto-value').textContent = `$${totalNeto.toLocaleString('es-CL')}`;
+    document.getElementById('month-liquido-value').textContent = `$${Math.round(totalNeto * 0.855).toLocaleString('es-CL')}`;
+}

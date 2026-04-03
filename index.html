@@ -3,50 +3,54 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Control SKUs - Premium</title>
+    <title>Control SKU Pro - Cloud</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="app-container">
-        <header class="app-header">
-            <h1>📦 Control de SKUs</h1>
-            <p id="current-month-name">Resumen Mensual</p>
-        </header>
+        <div id="auth-section" class="input-card">
+            <h2 style="text-align:center">🔑 Acceso Privado</h2>
+            <div class="input-group" style="margin-bottom:10px">
+                <label>Correo</label>
+                <input type="email" id="email" placeholder="tu@correo.com">
+            </div>
+            <div class="input-group" style="margin-bottom:15px">
+                <label>Contraseña</label>
+                <input type="password" id="password" placeholder="******">
+            </div>
+            <button onclick="login()" class="btn-success">Entrar</button>
+            <button onclick="register()" style="background:none; border:none; color:#64748b; width:100; margin-top:10px; cursor:pointer">¿No tienes cuenta? Regístrate</button>
+        </div>
 
-        <section class="monthly-dashboard">
-            <div class="stat-card">
-                <span class="stat-label">Pedidos</span>
-                <span id="month-orders-count" class="stat-value">0</span>
-            </div>
-            <div class="stat-card">
-                <span class="stat-label">Neto</span>
-                <span id="month-neto-value" class="stat-value">$0</span>
-            </div>
-            <div class="stat-card highlight">
-                <span class="stat-label">Líquido</span>
-                <span id="month-liquido-value" class="stat-value">$0</span>
-            </div>
-        </section>
+        <div id="main-app" style="display:none">
+            <header class="app-header">
+                <h1>📦 Control de SKUs</h1>
+                <p id="current-month-name">Periodo Contable</p>
+                <button onclick="logout()" style="background:#f1f5f9; border:none; padding:5px 10px; border-radius:5px; font-size:12px; margin-top:10px; cursor:pointer">Cerrar Sesión</button>
+            </header>
 
-        <section class="input-card">
-            <div class="input-row">
-                <div class="input-group">
-                    <label>Fecha</label>
-                    <input type="date" id="date-input">
+            <section class="monthly-dashboard">
+                <div class="stat-card"><span class="stat-label">Pedidos</span><span id="month-orders-count" class="stat-value">0</span></div>
+                <div class="stat-card"><span class="stat-label">Neto</span><span id="month-neto-value" class="stat-value">$0</span></div>
+                <div class="stat-card highlight"><span class="stat-label">Líquido</span><span id="month-liquido-value" class="stat-value">$0</span></div>
+            </section>
+
+            <section class="input-card">
+                <div class="input-row">
+                    <div class="input-group"><label>Fecha</label><input type="date" id="date-input"></div>
+                    <div class="input-group"><label>Cantidad</label><input type="number" id="sku-input"></div>
                 </div>
-                <div class="input-group">
-                    <label>Cantidad SKUs</label>
-                    <input type="number" id="sku-input" placeholder="Ej: 10">
-                </div>
-            </div>
-            <button id="add-button" class="btn-success">Guardar Registro</button>
-            <div id="error-msg"></div>
-        </section>
+                <button id="add-button" class="btn-success">Guardar Pedido</button>
+            </section>
 
-        <main id="tables-container"></main>
+            <main id="tables-container"></main>
+        </div>
     </div>
 
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
     <script src="script.js"></script>
 </body>
 </html>
