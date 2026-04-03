@@ -1,6 +1,6 @@
 // === CONFIGURACIÓN DE FIREBASE (PEGA TUS DATOS AQUÍ) ===
 const firebaseConfig = {
-  apiKey: "TU_API_KEY",
+   apiKey: "TU_API_KEY",
   authDomain: "TU_PROYECTO.firebaseapp.com",
   projectId: "TU_PROYECTO_ID",
   storageBucket: "TU_PROYECTO.appspot.com",
@@ -143,3 +143,4 @@ function updateMonthlyDashboard(orders) {
     document.getElementById('month-neto-value').textContent = `$${totalNeto.toLocaleString('es-CL')}`;
     document.getElementById('month-liquido-value').textContent = `$${Math.round(totalNeto * 0.855).toLocaleString('es-CL')}`;
 }
+
