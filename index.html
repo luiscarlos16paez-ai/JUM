@@ -3,54 +3,85 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Control SKU Pro - Cloud</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <title>Control SKU Pro</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="app-container">
-        <div id="auth-section" class="input-card">
-            <h2 style="text-align:center">🔑 Acceso Privado</h2>
-            <div class="input-group" style="margin-bottom:10px">
-                <label>Correo</label>
+    <div id="landing-page" class="app-container" style="text-align:center; padding-top: 50px;">
+        <h1 style="font-family: 'Inter', sans-serif; font-weight: 800; font-size: 3rem; color: #2563eb; text-shadow: 2px 2px 4px rgba(0,0,0,0.1); margin-bottom: 10px;">
+            Contador de SKU
+        </h1>
+        <div style="font-size: 60px; margin-bottom: 30px; text-shadow: 2px 2px 4px rgba(0,0,0,0.1);">🛒</div>
+        
+        <p style="font-size: 1.1rem; color: #64748b; margin-bottom: 30px; padding: 0 20px;">
+            La herramienta definitiva para tu gestión de inventario y cálculo de ganancias líquidas.
+        </p>
+
+        <button onclick="mostrarLogin()" class="btn-success" style="padding: 15px 40px; font-size: 1.1rem; border-radius: 50px; box-shadow: 0 4px 15px rgba(34, 197, 94, 0.4);">
+            🚀 Entrar a mi Panel
+        </button>
+
+        <div style="margin-top: 50px; border-top: 1px solid #e2e8f0; padding-top: 20px;">
+            <p style="font-size: 10px; color: #94a3b8;">PUBLICIDAD</p>
+            <div id="ad-space-publico" style="min-height: 90px;"></div>
+        </div>
+
+        <footer style="margin-top: 30px; padding-bottom: 20px;">
+            <a href="privacidad.html" style="color:#94a3b8; font-size:12px; text-decoration:none;">Política de Privacidad</a>
+        </footer>
+    </div>
+
+    <div id="auth-section" class="app-container" style="display:none; padding-top: 50px;">
+        <div class="input-card">
+            <h2 style="text-align:center; margin-bottom: 20px;">🔑 Acceso Privado</h2>
+            <div class="input-group" style="margin-bottom:15px">
+                <label>Correo Electrónico</label>
                 <input type="email" id="email" placeholder="tu@correo.com">
             </div>
-            <div class="input-group" style="margin-bottom:15px">
+            <div class="input-group" style="margin-bottom:20px">
                 <label>Contraseña</label>
                 <input type="password" id="password" placeholder="******">
             </div>
             <button onclick="login()" class="btn-success">Entrar</button>
-            <button onclick="register()" style="background:none; border:none; color:#64748b; width:100; margin-top:10px; cursor:pointer">¿No tienes cuenta? Regístrate</button>
+            <button onclick="register()" style="background:none; border:none; color:#64748b; width:100%; margin-top:15px; cursor:pointer; font-weight:600;">¿No tienes cuenta? Regístrate</button>
         </div>
+    </div>
 
-        <div id="main-app" style="display:none">
-            <header class="app-header">
-                <h1>📦 Control de SKUs</h1>
-                <p id="current-month-name">Periodo Contable</p>
-                <button onclick="logout()" style="background:#f1f5f9; border:none; padding:5px 10px; border-radius:5px; font-size:12px; margin-top:10px; cursor:pointer">Cerrar Sesión</button>
-            </header>
+    <div id="main-app" class="app-container" style="display:none">
+        <header class="app-header" style="position: relative; padding-bottom: 20px;">
+            <button onclick="logout()" style="position: absolute; top: 0; right: 0; background:#fee2e2; color:#dc2626; border:1px solid #fecaca; padding:6px 12px; border-radius:5px; font-size:12px; cursor:pointer; font-weight: 600;">
+                Cerrar Sesión
+            </button>
+            
+            <h1 style="font-size: 1.5rem; margin-top: 25px;">📦 Mis Registros</h1>
+        </header>
 
-            <section class="monthly-dashboard">
-                <div class="stat-card"><span class="stat-label">Pedidos</span><span id="month-orders-count" class="stat-value">0</span></div>
-                <div class="stat-card"><span class="stat-label">Neto</span><span id="month-neto-value" class="stat-value">$0</span></div>
-                <div class="stat-card highlight"><span class="stat-label">Líquido</span><span id="month-liquido-value" class="stat-value">$0</span></div>
-            </section>
+        <h2 id="current-month-name" style="text-align:center; color: #1e40af; font-size: 1.2rem; margin-bottom: 10px; font-weight: 800;">
+            Cargando periodo...
+        </h2>
 
-            <section class="input-card">
-                <div class="input-row">
-                    <div class="input-group"><label>Fecha</label><input type="date" id="date-input"></div>
-                    <div class="input-group"><label>Cantidad</label><input type="number" id="sku-input"></div>
-                </div>
-                <button id="add-button" class="btn-success">Guardar Pedido</button>
-            </section>
+        <section class="monthly-dashboard">
+            <div class="stat-card"><span class="stat-label">Pedidos</span><span id="month-orders-count" class="stat-value">0</span></div>
+            <div class="stat-card"><span class="stat-label">Neto</span><span id="month-neto-value" class="stat-value">$0</span></div>
+            <div class="stat-card highlight"><span class="stat-label">Líquido</span><span id="month-liquido-value" class="stat-value">$0</span></div>
+        </section>
 
-            <main id="tables-container"></main>
-        </div>
+        <section class="input-card">
+            <div class="input-row">
+                <div class="input-group"><label>Fecha</label><input type="date" id="date-input"></div>
+                <div class="input-group"><label>Cantidad SKU</label><input type="number" id="sku-input" placeholder="Ej: 15"></div>
+            </div>
+            <button id="add-button" class="btn-success">Guardar Pedido</button>
+        </section>
+
+        <main id="tables-container"></main>
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    
     <script src="script.js"></script>
 </body>
 </html>
