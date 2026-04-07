@@ -13,7 +13,8 @@ const auth = firebase.auth(), db = firebase.firestore();
 // --- MODO OSCURO ---
 function toggleTheme() {
     document.body.classList.toggle('dark-mode');
-    localStorage.setItem('theme', document.body.classList.contains('dark-mode') ? 'dark' : 'light');
+    const isDark = document.body.classList.contains('dark-mode');
+    localStorage.setItem('theme', isDark ? 'dark' : 'light');
 }
 if (localStorage.getItem('theme') === 'dark') document.body.classList.add('dark-mode');
 
@@ -38,7 +39,7 @@ auth.onAuthStateChanged(user => {
 
 function login() {
     const e = document.getElementById('email').value, p = document.getElementById('password').value;
-    auth.signInWithEmailAndPassword(e, p).catch(() => alert("Datos incorrectos"));
+    auth.signInWithEmailAndPassword(e, p).catch(err => alert("Error en acceso."));
 }
 function register() {
     const e = document.getElementById('email').value, p = document.getElementById('password').value;
@@ -69,28 +70,29 @@ function renderizarTodo(orders) {
             netoDía += o.total;
             return `<div class="order-row">
                 <div class="order-qty">${o.qty}</div>
-                <div style="flex-grow:1; font-size:13px; opacity: 0.8;">Total: $${o.total.toLocaleString()}</div>
-                <button style="background:none; border:none; color:#f87171; cursor:pointer;" onclick="deleteOrder('${o.id}')">✕</button>
+                <div style="flex-grow:1; font-size:13px;">$${o.total.toLocaleString()}</div>
+                <button class="delete-btn" onclick="deleteOrder('${o.id}')">✕</button>
             </div>`;
         }).join('');
 
         container.innerHTML += `<div class="daily-card">
-            <div style="display:flex; justify-content:space-between; font-weight:700; font-size:13px; margin-bottom:10px; opacity:0.6;">
+            <div style="display:flex; justify-content:space-between; font-weight:bold; font-size:14px; margin-bottom:10px;">
                 <span>📅 ${date}</span>
-                <span>${grouped[date].length} PEDIDOS</span>
+                <span style="color:#2563eb;">${grouped[date].length} pedidos</span>
             </div>
             ${rowsHtml}
-            <div style="text-align:right; margin-top:10px; font-weight:800; color:#10b981;">Líquido: $${Math.round(netoDía * 0.855).toLocaleString()}</div>
+            <div style="text-align:right; margin-top:10px; font-weight:bold; color:#16a34a;">Día: $${Math.round(netoDía * 0.855).toLocaleString()}</div>
         </div>`;
     });
 }
 
-// --- LÓGICA CIERRE DE MES (DÍA 3) ---
+// --- LÓGICA DEL DÍA 3 (CIERRE DE MES) ---
 function updateMonthlyDashboard(orders) {
     const now = new Date();
     const diaA = now.getDate();
     let mC = now.getMonth(), yC = now.getFullYear();
 
+    // Si hoy es día 1 o 2, mostramos el mes anterior
     if (diaA < 3) { if (mC === 0) { mC = 11; yC--; } else { mC--; } }
 
     const meses = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
@@ -100,10 +102,12 @@ function updateMonthlyDashboard(orders) {
     orders.forEach(o => {
         const d = new Date(o.date + "T00:00:00");
         const dP = d.getDate(), mP = d.getMonth(), yP = d.getFullYear();
+
         let match = false;
         if (yP === yC && mP === mC && dP >= 3) match = true;
-        let mS = mC === 11 ? 0 : mC + 1, yS = mC === 11 ? yC + 1 : yC;
-        if (yP === yS && mP === mS && dP < 3) match = true;
+        let mSig = mC === 11 ? 0 : mC + 1, ySig = mC === 11 ? yC + 1 : yC;
+        if (yP === ySig && mP === mSig && dP < 3) match = true;
+
         if (match) { totalP++; totalN += o.total; }
     });
 
@@ -112,10 +116,11 @@ function updateMonthlyDashboard(orders) {
     document.getElementById('month-liquido-value').textContent = `$${Math.round(totalN * 0.855).toLocaleString('es-CL')}`;
 }
 
+// Guardar
 document.getElementById('add-button').addEventListener('click', () => {
     const q = parseInt(document.getElementById('sku-input').value);
     const d = document.getElementById('date-input').value;
-    if (!q || !d) return;
+    if (!q) return;
     let p = 0, b = 0;
     if (q <= 10) { p = 120; b = 1000; }
     else if (q <= 20) { p = 70; b = 1000; }
