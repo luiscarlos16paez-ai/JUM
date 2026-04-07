@@ -3,46 +3,37 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Contador de SKU Pro</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <title>SKU Master Pro</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <button id="theme-toggle" onclick="toggleTheme()">🌓</button>
 
-    <div id="landing-page" class="app-container" style="text-align:center; padding-top: 60px;">
+    <div id="landing-page" class="app-container" style="text-align:center; padding-top: 80px;">
         <h1 class="titulo-principal">Contador de SKU</h1>
         <div class="logo-carrito">🛒</div>
-        <p class="subtitulo">Gestiona tus pedidos y ganancias en tiempo real.</p>
-        <button onclick="mostrarLogin()" class="btn-inicio">🚀 Entrar a mi Panel</button>
-        <footer style="margin-top: 50px;">
-            <a href="privacidad.html" style="color:#94a3b8; font-size:12px; text-decoration:none;">Política de Privacidad</a>
-        </footer>
+        <p class="subtitulo">Gestión profesional de inventario.</p>
+        <button onclick="mostrarLogin()" class="btn-inicio">Comenzar Ahora</button>
     </div>
 
-    <div id="auth-section" class="app-container" style="display:none; padding-top: 50px;">
-        <div class="input-card">
-            <h2 style="text-align:center; margin-bottom:20px;">🔑 Acceso Privado</h2>
-            <div class="input-group">
-                <label>Correo</label>
-                <input type="email" id="email" placeholder="tu@correo.com">
-            </div>
-            <div class="input-group">
-                <label>Contraseña</label>
-                <input type="password" id="password" placeholder="******">
-            </div>
+    <div id="auth-section" class="app-container" style="display:none; padding-top: 60px;">
+        <div class="input-card modern-card">
+            <h2 style="text-align:center; margin-bottom:25px;">Acceso</h2>
+            <input type="email" id="email" placeholder="Correo electrónico" class="pro-input">
+            <input type="password" id="password" placeholder="Contraseña" class="pro-input">
             <button onclick="login()" class="btn-success" style="width:100%; margin-top:10px;">Entrar</button>
-            <button onclick="register()" class="btn-link">¿No tienes cuenta? Regístrate</button>
+            <button onclick="register()" class="btn-link">Crear cuenta nueva</button>
         </div>
     </div>
 
     <div id="main-app" class="app-container" style="display:none">
         <header class="app-header">
-            <button onclick="logout()" class="btn-logout-mini">Cerrar Sesión</button>
-            <h1 style="font-size: 1.4rem; margin-top: 20px;">📦 Mis Registros</h1>
+            <button onclick="logout()" class="btn-logout-mini">Salir</button>
+            <h1 style="font-size: 1.2rem; margin-top: 15px; opacity: 0.8;">Mis Registros</h1>
         </header>
 
-        <h2 id="current-month-name" class="periodo-titulo">Cargando periodo...</h2>
+        <h2 id="current-month-name" class="periodo-titulo">Cargando...</h2>
 
         <section class="monthly-dashboard">
             <div class="stat-card"><span class="stat-label">Pedidos</span><span id="month-orders-count" class="stat-value">0</span></div>
@@ -50,22 +41,21 @@
             <div class="stat-card highlight"><span class="stat-label">Líquido</span><span id="month-liquido-value" class="stat-value">$0</span></div>
         </section>
 
-        <section class="input-card">
-            <div class="input-row">
-                <div class="input-group"><label>Fecha</label><input type="date" id="date-input"></div>
-                <div class="input-group"><label>Cantidad</label><input type="number" id="sku-input" placeholder="0"></div>
+        <section class="input-card-pro">
+            <div class="pro-input-group">
+                <div class="field">
+                    <label>Fecha del pedido</label>
+                    <input type="date" id="date-input">
+                </div>
+                <div class="field">
+                    <label>Cantidad SKU</label>
+                    <input type="number" id="sku-input" placeholder="0">
+                </div>
             </div>
-            <button id="add-button" class="btn-success" style="width:100%; margin-top:10px;">Guardar Pedido</button>
+            <button id="add-button" class="btn-save">Registrar Pedido</button>
         </section>
 
         <main id="tables-container"></main>
-
-        <div id="ads-container">
-            <p style="font-size: 9px; color: #94a3b8; text-align: center; margin-bottom: 5px;">PUBLICIDAD RECOMENDADA</p>
-            <div class="ad-placeholder">
-                Espacio disponible para Anuncios
-            </div>
-        </div>
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
